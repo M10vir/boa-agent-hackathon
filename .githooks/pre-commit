@@ -1,5 +1,16 @@
 #!/bin/bash
-echo "Running Black, isort, and Flake8 checks..."
-black --check .
-isort --check-only .
-flake8 .
+set -euo pipefail
+
+# Get staged python files
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$' || true)
+
+# If none, exit quickly & quietly
+if [ -z "$FILES" ]; then
+  exit 0
+fi
+
+echo "Running Black, isort, and Flake8 on staged Python files..."
+# Faster & quieter checks
+black --check --quiet $FILES
+isort --check-only $FILES
+flake8 $FILES
