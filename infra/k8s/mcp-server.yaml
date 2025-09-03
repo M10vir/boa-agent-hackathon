@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mcp-server
+  namespace: agents
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: mcp-server } }
+  template:
+    metadata: { labels: { app: mcp-server } }
+    spec:
+      containers:
+      - name: mcp-server
+        image: REPLACE_WITH_MCP_IMAGE
+        env:
+        - name: USERS_API
+          valueFrom: { configMapKeyRef: { name: boa-apis, key: USERS_API } }
+        - name: TXN_API
+          valueFrom: { configMapKeyRef: { name: boa-apis, key: TXN_API } }
+        ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mcp-server
+  namespace: agents
+spec:
+  selector: { app: mcp-server }
+  ports:
+    - port: 8080
+      targetPort: 8080

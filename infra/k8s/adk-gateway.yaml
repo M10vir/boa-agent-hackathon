@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adk-gateway
+  namespace: agents
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: adk-gateway } }
+  template:
+    metadata: { labels: { app: adk-gateway } }
+    spec:
+      containers:
+      - name: adk-gateway
+        image: REPLACE_WITH_ADK_IMAGE
+        env:
+        - name: MCP_BASE
+          value: http://mcp-server.agents.svc.cluster.local:8080
+        ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adk-gateway
+  namespace: agents
+spec:
+  selector: { app: adk-gateway }
+  ports:
+    - port: 8080
+      targetPort: 8080
