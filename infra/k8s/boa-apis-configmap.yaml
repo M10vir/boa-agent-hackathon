@@ -4,5 +4,5 @@ metadata:
   name: boa-apis
   namespace: agents
 data:
-  USERS_API: "http://userservice.default.svc.cluster.local"
-  TXN_API: "http://transactionhistory.default.svc.cluster.local"
+  USERS_API: "http://userservice.default.svc.cluster.local:8080"
+  TXN_API: "http://transactionhistory.default.svc.cluster.local:8080"
