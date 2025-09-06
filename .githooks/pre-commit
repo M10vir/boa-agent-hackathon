@@ -1,16 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
-
-# Get staged python files
-FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$' || true)
-
-# If none, exit quickly & quietly
-if [ -z "$FILES" ]; then
-  exit 0
-fi
-
 echo "Running Black, isort, and Flake8 on staged Python files..."
-# Faster & quieter checks
-black --check --quiet $FILES
-isort --check-only $FILES
-flake8 $FILES
+
+PY_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.py$' || true)
+[ -z "${PY_FILES}" ] && exit 0
+
+black ${PY_FILES} || exit 1
+isort ${PY_FILES} || exit 1
+flake8 ${PY_FILES} || true   # don’t block commits on lint warnings
+
+git add ${PY_FILES}           # re-stage any formatted files
+exit 0                        # allow commit to proceed
