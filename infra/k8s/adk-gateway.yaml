@@ -1,29 +1,103 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: adk-gateway
-  namespace: agents
-spec:
-  replicas: 1
-  selector: { matchLabels: { app: adk-gateway } }
-  template:
-    metadata: { labels: { app: adk-gateway } }
-    spec:
-      containers:
-      - name: adk-gateway
-        image: REPLACE_WITH_ADK_IMAGE
-        env:
-        - name: MCP_BASE
-          value: http://mcp-server.agents.svc.cluster.local:8080
-        ports: [{ containerPort: 8080 }]
----
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    cloud.google.com/neg: '{"ingress":true}'
   name: adk-gateway
   namespace: agents
 spec:
-  selector: { app: adk-gateway }
+  clusterIP: 34.118.235.51
+  clusterIPs:
+    - 34.118.235.51
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
   ports:
     - port: 8080
+      protocol: TCP
       targetPort: 8080
+  selector:
+    app: adk-gateway
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    autopilot.gke.io/resource-adjustment: '{"input":{"containers":[{"name":"adk-gateway"}]},"output":{"containers":[{"limits":{"ephemeral-storage":"1Gi"},"requests":{"cpu":"500m","ephemeral-storage":"1Gi","memory":"2Gi"},"name":"adk-gateway"}]},"computeClassAtAdmission":"Default","modified":true}'
+    autopilot.gke.io/warden-version: 33.33.8-gke.2
+    deployment.kubernetes.io/revision: "16"
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"annotations":{},"name":"adk-gateway","namespace":"agents"},"spec":{"replicas":1,"selector":{"matchLabels":{"app":"adk-gateway"}},"template":{"metadata":{"labels":{"app":"adk-gateway"}},"spec":{"containers":[{"env":[{"name":"MCP_BASE","value":"http://mcp-server.agents.svc.cluster.local:8080"}],"image":"us-central1-docker.pkg.dev/gketurns10hackathonchallenge/boa-agents/adk-gateway@sha256:df30629186535c041cfca9c2505e5f3266d2cc0286c2af5b77e88f844966efa5","name":"adk-gateway","ports":[{"containerPort":8080}]}]}}}}
+  name: adk-gateway
+  namespace: agents
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: adk-gateway
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2025-09-04T23:18:22+03:00"
+      creationTimestamp: null
+      labels:
+        app: adk-gateway
+    spec:
+      containers:
+        - env:
+            - name: MCP_BASE
+              value: http://mcp-server.agents.svc.cluster.local:8080
+            - name: PROJECT_ID
+              value: gketurns10hackathonchallenge
+            - name: VERTEX_LOCATION
+              value: us-east5
+            - name: VERTEX_MODEL
+              value: gemini-1.5-pro
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: GOOGLE_API_KEY
+                  name: gemini-api
+          image: us-central1-docker.pkg.dev/gketurns10hackathonchallenge/boa-agents/adk-gateway@sha256:5eb80e422ee11747260f7d93152c460e778861b3aaf33b7e9dbd0d6ff8f62ba9
+          imagePullPolicy: IfNotPresent
+          name: adk-gateway
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              ephemeral-storage: 1Gi
+            requests:
+              cpu: 500m
+              ephemeral-storage: 1Gi
+              memory: 2Gi
+          securityContext:
+            capabilities:
+              drop:
+                - NET_RAW
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccount: adk-gateway-ksa
+      serviceAccountName: adk-gateway-ksa
+      terminationGracePeriodSeconds: 30
+      tolerations:
+        - effect: NoSchedule
+          key: kubernetes.io/arch
+          operator: Equal
+          value: amd64

@@ -4,3 +4,6 @@ bank-of-anthos/
 # macOS
 .DS_Store
 agents/.DS_Store
+
+# Extra logs
+*.orig
