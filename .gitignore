@@ -7,3 +7,4 @@ agents/.DS_Store
 
 # Extra logs
 *.orig
+*.sh
