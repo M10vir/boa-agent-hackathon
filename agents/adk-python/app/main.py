@@ -14,6 +14,28 @@ from google.genai.types import GenerateContentConfig
 from pydantic import BaseModel, Field
 from vertexai.generative_models import GenerativeModel
 
+
+def _try_studio(prompt: dict) -> dict | None:
+    api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        return None
+    try:
+        client = genai.Client(api_key=api_key)
+        cfg = GenerateContentConfig(
+            temperature=0.2,
+            top_p=0.8,
+            max_output_tokens=512,
+            response_mime_type="application/json",
+        )
+        model = os.getenv("STUDIO_MODEL", "gemini-1.5-flash")
+        res = client.models.generate_content(
+            model=model, contents=json.dumps(prompt), config=cfg
+        )
+        return json.loads(res.text)
+    except Exception:
+        return None
+
+
 app = FastAPI(
     title="ADK Agent Gateway — Fraud Scoring (Bank of Anthos + Gemini)",
     description=(
