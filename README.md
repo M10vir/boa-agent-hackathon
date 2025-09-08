@@ -22,8 +22,8 @@ flowchart LR
 
     subgraph BoA["Bank of Anthos (unchanged core services)"]
       FE[Frontend (LB)]
-      USERSVC[userservice]
-      TXN[transactionhistory]
+      USERSVC[User Service]
+      TXN[Transaction History]
       LEDGER[ledger-writer/reader]
       CONTACTS[contacts]
     end
