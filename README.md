@@ -21,11 +21,11 @@ flowchart LR
     direction LR
 
     subgraph BoA["Bank of Anthos (unchanged core services)"]
-      FE[Frontend (LB)]
-      USERSVC[User Service]
-      TXN[Transaction History]
-      LEDGER[Ledger Writer/Reader]
-      CONTACTS[Contacts]
+      FE["Frontend (LB)"]
+      USERSVC["User Service"]
+      TXN["Transaction History"]
+      LEDGER["Ledger Writer/Reader"]
+      CONTACTS["Contacts"]
     end
 
     subgraph AgentsNS["Agents Namespace"]
