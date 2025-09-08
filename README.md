@@ -35,7 +35,8 @@ flowchart LR
   end
 
   subgraph GoogleAI["Google AI"]
-    style GoogleAI stroke-dasharray: 3 3
+    %% GitHub Mermaid accepts stroke-dasharray but if it errors, remove the style line below
+    style GoogleAI fill:#fff,stroke:#999,stroke-width:1px,stroke-dasharray: 5 5
     STUDIO[Gemini via AI Studio\n(API Key)]
     VERTEX[Gemini via Vertex AI\n(Service Account)]
   end
@@ -53,10 +54,10 @@ flowchart LR
 
   ADK -->|JSON Decision\n(risk_score, decision, reasons)| FE
 
-  ADK -. A2A signal .-> A2A[Creditworthiness Co-Pilot\n(optional)]
-  A2A -. influence .-> ADK
+  A2A[Creditworthiness Co-Pilot\n(optional)] -. influence .-> ADK
+  ADK -. A2A signal .-> A2A
 
-  KAI[kubectl-ai\n(optional)] -. intent->|“Restart adk-gateway”| GKE
+  KAI[kubectl-ai\n(optional)] -. intent .-> GKE
 
   classDef primary fill:#0ea5e9,stroke:#0369a1,color:#fff;
   class ADK,MCP primary
