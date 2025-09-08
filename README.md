@@ -1,10 +1,7 @@
-Perfect — thanks for sharing your directory tree 🙌. It looks clean and clearly separates baseline (bank-of-anthos) from extension work (agents, infra, docs). For judges, we’ll tighten the README to highlight this layout, and add a Quickstart so they can reproduce /fraud/score in <2 minutes.
-
-Here’s the updated README.md skeleton with Quickstart + validated directory structure:
 
 Bank of Anthos — AI Agentic Extension on GKE
 
-📑 Table of Contents
+Table of Contents
 
 	•	Overview
 	•	Objectives
@@ -13,7 +10,6 @@ Bank of Anthos — AI Agentic Extension on GKE
 	•	Scope & Deliverables
 	•	Baseline vs Extension
 	•	Architecture
-	•	Demo
 	•	Learnings
 
 Overview
@@ -113,6 +109,57 @@ Extension (Hackathon work in this repo):
 	•	docs/ → Logs, architecture, deployment proof
 
 Architecture
+
+### High-Level Diagram
+
+```mermaid
+flowchart LR
+  subgraph GKE["Google Kubernetes Engine (GKE) Cluster"]
+    direction LR
+
+    subgraph BoA["Bank of Anthos (unchanged core services)"]
+      FE[Frontend (LB)]
+      USERSVC[userservice]
+      TXN[transactionhistory]
+      LEDGER[ledger-writer/reader]
+      CONTACTS[contacts]
+    end
+
+    subgraph AgentsNS["Agents Namespace"]
+      ADK[ADK Agent Gateway (Fraud Agent)\nFastAPI /fraud/score]
+      MCP[MCP Server\n(BoA API Tools via MCP)]
+    end
+  end
+
+  subgraph GoogleAI["Google AI"]
+    style GoogleAI stroke-dasharray: 3 3
+    STUDIO[Gemini via AI Studio\n(API Key)]
+    VERTEX[Gemini via Vertex AI\n(Service Account)]
+  end
+
+  %% Primary runtime flow
+  FE -->|User actions create/echo transactions| USERSVC
+  USERSVC --> TXN
+  FE -. demo call .->|curl/Swagger| ADK
+
+  ADK -->|MCP Tools: getUserProfile/getTransactions| MCP
+  MCP -->|REST calls| TXN
+  MCP -->|REST calls| USERSVC
+
+  ADK -->|Score Prompt| STUDIO
+  ADK -. optional .->|Preferred path| VERTEX
+
+  ADK -->|JSON Decision\n(risk_score, decision, reasons)| FE
+
+  %% Optional A2A
+  ADK -. A2A signal .-> A2A[Creditworthiness Co-Pilot\n(optional)]
+  A2A -. influence .-> ADK
+
+  %% kubectl-ai path
+  KAI[kubectl-ai\n(optional)] -. intent->|“Restart adk-gateway”| GKE
+
+  %% Labels
+  classDef primary fill:#0ea5e9,stroke:#0369a1,color:#fff;
 
 	•	Baseline Bank of Anthos services run in default namespace.
 	•	AI Agents (MCP + Fraud Sentinel) run in agents namespace.
