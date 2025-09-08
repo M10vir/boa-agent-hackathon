@@ -62,6 +62,7 @@ flowchart LR
   classDef primary fill:#0ea5e9,stroke:#0369a1,color:#fff;
   class ADK,MCP primary
 
+
 ASCII Architecture (Portable for Slides)
 
                  ┌────────────────────────────┐
