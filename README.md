@@ -42,14 +42,15 @@ flowchart LR
 
   FE -->|User actions create/echo transactions| USERSVC
   USERSVC --> TXN
-  FE -. "demo call" .->|curl/Swagger| ADK
+  FE -. "demo call" .-> ADK
+  ADK -->|curl/Swagger| ADK
 
   ADK -->|MCP Tools: getUserProfile/getTransactions| MCP
   MCP -->|REST calls| TXN
   MCP -->|REST calls| USERSVC
 
   ADK -->|Score Prompt| STUDIO
-  ADK -. "optional" .->|Preferred path| VERTEX
+  ADK -. "optional" .-> VERTEX
 
   ADK -->|"JSON Decision\n(risk_score, decision, reasons)"| FE
 
