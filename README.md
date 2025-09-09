@@ -15,6 +15,8 @@ Agents include:
 
 ### High-Level Diagram (Mermaid)
 
+### High-Level Diagram (Mermaid)
+
 ```mermaid
 flowchart LR
   subgraph GKE["Google Kubernetes Engine (GKE) Cluster"]
@@ -56,6 +58,7 @@ flowchart LR
   ADK -. A2A signal .-> A2A
 
   KAI[kubectl-ai\n(optional)] -. intent .-> GKE
+
   classDef primary fill:#0ea5e9,stroke:#0369a1,color:#fff;
   class ADK,MCP primary
 
