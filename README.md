@@ -12,9 +12,9 @@ We introduce new containerized agents that interact with existing APIs (without 
 	•	Deliver a reproducible demo + repo for hackathon judges.
 
 ## Agents include:
-- **Fraud Sentinel Agent** – Detects suspicious transactions in real time.
-- **(Optional) Creditworthiness Co-Pilot** – AI-assisted credit scoring.
-- **(Optional) Compliance Agent** – Monitors and generates audit signals.
+        •       Fraud Sentinel Agent – Detects suspicious transactions in real time.
+        •       (Optional) Creditworthiness Co-Pilot – AI-assisted credit scoring.
+        •       (Optional) Compliance Agent – Monitors and generates audit signals.
 
 ## High-Level Architecture: Agentic AI + GKE + Gemini
 
