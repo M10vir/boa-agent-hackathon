@@ -21,44 +21,41 @@ flowchart LR
     direction LR
 
     subgraph BoA["Bank of Anthos (unchanged core services)"]
-      FE["Frontend (LB)"]
-      USERSVC["User Service"]
-      TXN["Transaction History"]
-      LEDGER["Ledger Writer/Reader"]
-      CONTACTS["Contacts"]
+      FE[Frontend (LB)]
+      USERSVC[User Service]
+      TXN[Transaction History]
+      LEDGER[ledger-writer/reader]
+      CONTACTS[contacts]
     end
 
     subgraph AgentsNS["Agents Namespace"]
-      ADK["ADK Agent Gateway (Fraud Agent)\nFastAPI /fraud/score"]
-      MCP["MCP Server\nBoA API Tools via MCP"]
+      ADK[ADK Agent Gateway (Fraud Agent)\nFastAPI /fraud/score]
+      MCP[MCP Server\n(BoA API Tools via MCP)]
     end
   end
 
   subgraph GoogleAI["Google AI"]
-    style GoogleAI fill:#fff,stroke:#999,stroke-width:1px,stroke-dasharray: 5 5
-    STUDIO["Gemini via AI Studio\n(API Key)"]
-    VERTEX["Gemini via Vertex AI\n(Service Account)"]
+    STUDIO[Gemini via AI Studio\n(API Key)]
+    VERTEX[Gemini via Vertex AI\n(Service Account)]
   end
 
   FE -->|User actions create/echo transactions| USERSVC
   USERSVC --> TXN
-  FE -. "demo call" .-> ADK
-  ADK -->|curl/Swagger| ADK
+  FE -. demo call .->|curl/Swagger| ADK
 
   ADK -->|MCP Tools: getUserProfile/getTransactions| MCP
   MCP -->|REST calls| TXN
   MCP -->|REST calls| USERSVC
 
   ADK -->|Score Prompt| STUDIO
-  ADK -. "optional" .-> VERTEX
+  ADK -. optional .->|Preferred path| VERTEX
 
-  ADK -->|"JSON Decision\n(risk_score, decision, reasons)"| FE
+  ADK -->|JSON Decision\n(risk_score, decision, reasons)| FE
 
-  A2A["Creditworthiness Co-Pilot\n(optional)"] -. "influence" .-> ADK
-  ADK -. "A2A signal" .-> A2A
+  A2A[Creditworthiness Co-Pilot\n(optional)] -. influence .-> ADK
+  ADK -. A2A signal .-> A2A
 
-  KAI["kubectl-ai\n(optional)"] -. "intent" .-> GKE
-
+  KAI[kubectl-ai\n(optional)] -. intent .-> GKE
   classDef primary fill:#0ea5e9,stroke:#0369a1,color:#fff;
   class ADK,MCP primary
 
